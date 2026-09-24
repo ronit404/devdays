@@ -40,6 +40,14 @@ ALL UI components MUST use dark theme colors:
 - Mobile-first approach
 - Ensure readability on all screen sizes
 
+## TypeScript and Formatting Conventions
+
+- Prefer explicit TypeScript types for exported helpers, component props, and data-layer functions, especially in `db/` and `src/lib/`.
+- Keep interfaces and function signatures descriptive; prefer `interface Props`/`type` names that explain the contract instead of anonymous inline shapes.
+- Use `type` for data models and `interface` for component/public object contracts when the shape is meant to be extended or read clearly.
+- Avoid redundant type assertions and do not add broad `any` types when the intent is clear from the surrounding code.
+- The repository's ESLint configuration enforces the project's baseline standards, including `@typescript-eslint/no-unused-vars` and the recommended TypeScript rules.
+
 ## Utility Classes
 
 - Prefer utility classes over custom CSS when possible

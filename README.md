@@ -64,6 +64,18 @@ npm run test:unit   # Vitest unit tests (transforms + data-access helpers)
 npm run test:e2e    # Playwright E2E tests (builds + previews the static site first)
 ```
 
+## Coding standards
+
+This project documents a single, consistent comment and documentation philosophy across the repository:
+
+- Comment the intent, tradeoff, or business reason behind a decision rather than restating the code.
+- Treat outdated comments as bugs and update or remove them in the same change that changes the implementation.
+- Every exported helper in `db/` and `src/lib/` gets a TSDoc/JSDoc block describing its purpose, parameters, and return value.
+- Reusable `.astro` components should document their `Props` interface so their public contract is self-explanatory.
+- Prefer explicit TypeScript types and keep formatting aligned with the existing ESLint configuration.
+
+The instruction files in `.github/instructions/` are the canonical source for these standards, and contributors should read the relevant file before making changes.
+
 ## Linting
 
 The frontend uses ESLint to enforce code quality across TypeScript and Astro files. Run it with:

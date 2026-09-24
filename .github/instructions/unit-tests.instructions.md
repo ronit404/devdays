@@ -77,6 +77,12 @@ describe('getAllGames', () => {
 - Ordering guarantees (alphabetical by title) — static builds depend on this being deterministic
 - Determinism of seed-derived values
 
+## Commenting and Documentation Standards
+
+- Keep comments focused on intent and non-obvious decisions; avoid narrating the code line by line.
+- For test helpers and shared fixtures, document the purpose of the setup and any edge case the test is covering.
+- If a test is asserting a behavior for a reason that is not immediately obvious, add a brief comment explaining the business rule or bug being protected.
+
 ## Best Practices
 
 - Follow Arrange-Act-Assert.
