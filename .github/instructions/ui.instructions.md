@@ -20,6 +20,13 @@ Refer to technology-specific instruction files:
 
 ## Core Principles
 
+### Commenting and Documentation Standards
+
+- Comment why a component or pattern exists, especially when it encodes a product decision, accessibility choice, or workaround that is not obvious from the markup alone.
+- Avoid comments that merely describe the next HTML element or CSS class; the code itself already communicates that.
+- For reusable UI components, document the `Props` interface and the public contract so other contributors know what each field is for without reverse-engineering the markup.
+- When design or behavior changes, update the comments in the same patch so the docs remain trustworthy.
+
 ### Testability
 
 - Every interactive element MUST include a `data-testid` attribute

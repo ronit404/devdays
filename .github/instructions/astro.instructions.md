@@ -114,6 +114,14 @@ There is no Svelte/React layer. When a page genuinely needs client behaviour, ad
 - Run `npx astro sync` to (re)generate route/content types before linting or type-checking
 - `.astro` files are type-checked by `npm run typecheck:astro` (which runs `astro sync` then `astro check`), on the classic `typescript` package. The pure TypeScript in `db/`, `src/lib/`, and `src/types/` is type-checked separately by `npm run typecheck` (the native TS 7 compiler, `tsgo`), which does **not** process `.astro` files.
 
+## Commenting and Documentation Standards
+
+- Comment the intent behind a decision, constraint, or workaround — not the mechanics of the code the reader can already see.
+- Delete or update stale comments when the code changes; outdated comments are treated as bugs.
+- For reusable `.astro` components, document the `Props` interface clearly enough that another contributor can understand the public API without reading the implementation.
+- Prefer comments that explain why a branch exists, why a fallback is needed, or why a specific ordering/shape is required.
+- Avoid “restated code” comments like `// assign the value to the variable` that merely repeat the line below.
+
 ## Best Practices
 
 - Keep data fetching in frontmatter (build time); avoid client-side fetching
