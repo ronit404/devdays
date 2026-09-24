@@ -6,16 +6,27 @@ import {
     getAllGames,
     getAllGameIds,
     getGameById,
+    getFilteredGames,
+    getAllCategories,
+    getAllPublishers,
 } from './games';
 
 async function seedGames(db: Database, count: number): Promise<void> {
-    const [category] = await db
+    const strategy = await db
         .insert(categories)
         .values({ name: 'Strategy', description: 'cat' })
         .returning({ id: categories.id });
-    const [publisher] = await db
+    const puzzle = await db
+        .insert(categories)
+        .values({ name: 'Puzzle', description: 'cat' })
+        .returning({ id: categories.id });
+    const pubOne = await db
         .insert(publishers)
         .values({ name: 'Pub One', description: 'pub' })
+        .returning({ id: publishers.id });
+    const pubTwo = await db
+        .insert(publishers)
+        .values({ name: 'Pub Two', description: 'pub' })
         .returning({ id: publishers.id });
 
     // Insert titles in reverse-alphabetical order to prove ordering is applied.
@@ -24,8 +35,8 @@ async function seedGames(db: Database, count: number): Promise<void> {
             title: `Game ${String(i).padStart(2, '0')}`,
             description: `Description ${i}`,
             starRating: 4.2,
-            categoryId: category.id,
-            publisherId: publisher.id,
+            categoryId: i % 2 === 0 ? strategy[0].id : puzzle[0].id,
+            publisherId: i % 2 === 0 ? pubOne[0].id : pubTwo[0].id,
         });
     }
 }
@@ -41,8 +52,8 @@ describe('games data-access helpers', () => {
         await seedGames(db, 3);
         const all = await getAllGames(db);
         expect(all.map((g) => g.title)).toEqual(['Game 01', 'Game 02', 'Game 03']);
-        expect(all[0].category).toEqual({ id: expect.any(Number), name: 'Strategy' });
-        expect(all[0].publisher).toEqual({ id: expect.any(Number), name: 'Pub One' });
+        expect(all[0].category).toEqual({ id: expect.any(Number), name: 'Puzzle' });
+        expect(all[0].publisher).toEqual({ id: expect.any(Number), name: 'Pub Two' });
     });
 
     it('returns all game ids ordered by title', async () => {
@@ -62,5 +73,49 @@ describe('games data-access helpers', () => {
     it('returns null for a non-existent game', async () => {
         await seedGames(db, 2);
         expect(await getGameById(db, 99999)).toBeNull();
+    });
+
+    it('returns categories ordered alphabetically', async () => {
+        await seedGames(db, 1);
+        const categoriesList = await getAllCategories(db);
+        expect(categoriesList.map((category) => category.name)).toEqual(['Puzzle', 'Strategy']);
+    });
+
+    it('returns publishers ordered alphabetically', async () => {
+        await seedGames(db, 1);
+        const publishersList = await getAllPublishers(db);
+        expect(publishersList.map((publisher) => publisher.name)).toEqual(['Pub One', 'Pub Two']);
+    });
+
+    it('filters games by category id', async () => {
+        await seedGames(db, 4);
+        const filtered = await getFilteredGames(db, { categoryIds: [2] });
+        expect(filtered.map((game) => game.title)).toEqual(['Game 01', 'Game 03']);
+        filtered.forEach((game) => expect(game.category?.name).toBe('Puzzle'));
+    });
+
+    it('filters games by publisher id', async () => {
+        await seedGames(db, 4);
+        const filtered = await getFilteredGames(db, { publisherIds: [1] });
+        expect(filtered.map((game) => game.title)).toEqual(['Game 02', 'Game 04']);
+        filtered.forEach((game) => expect(game.publisher?.name).toBe('Pub One'));
+    });
+
+    it('combines category and publisher filters', async () => {
+        await seedGames(db, 4);
+        const filtered = await getFilteredGames(db, {
+            categoryIds: [2],
+            publisherIds: [2],
+        });
+        expect(filtered.map((game) => game.title)).toEqual(['Game 01', 'Game 03']);
+    });
+
+    it('returns an empty list when no games match the selected filters', async () => {
+        await seedGames(db, 4);
+        const filtered = await getFilteredGames(db, {
+            categoryIds: [999],
+            publisherIds: [999],
+        });
+        expect(filtered).toEqual([]);
     });
 });
