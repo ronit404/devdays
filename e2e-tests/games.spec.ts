@@ -24,6 +24,27 @@ test.describe('Game Listing and Navigation', () => {
     });
   });
 
+  test('should filter games by category and publisher', async ({ page }) => {
+    await test.step('Navigate to homepage', async () => {
+      await page.goto('/');
+      await expect(page.getByTestId('games-grid')).toBeVisible();
+    });
+
+    await test.step('Choose a category and publisher', async () => {
+      await page.getByLabel('Filter games by Action').check();
+      await page.getByTestId('publisher-filter').selectOption({ label: 'CodeForge Studios' });
+    });
+
+    await test.step('Verify only matching games remain visible', async () => {
+      const visibleCards = page.locator('[data-testid="game-card"]:not(.hidden)');
+      await expect(visibleCards).toHaveCount(2);
+      await expect(visibleCards.first().getByTestId('game-title')).toContainText('Cloud Conqueror');
+      await expect(visibleCards.nth(1).getByTestId('game-title')).toContainText('Script Strike');
+      await expect(page.getByTestId('games-grid')).toBeVisible();
+    });
+  });
+
+
   test('should navigate to correct game details page when clicking on a game', async ({ page }) => {
     let gameId: string | null;
     let gameTitle: string | null;
